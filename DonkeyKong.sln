@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34018.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template", "DonkeyKong\Template.csproj", "{F7BB6FD3-9992-4C77-BDD8-A78296B77EC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DonkeyKong", "DonkeyKong\DonkeyKong.csproj", "{F7BB6FD3-9992-4C77-BDD8-A78296B77EC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -11,9 +11,15 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\Sprites\marioMoving.png" />
     <None Remove="Content\UI\button0.png" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Sprites\marioMoving.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.ico" />
@@ -27,9 +33,7 @@
     <Folder Include="Content\Backgrounds\" />
     <Folder Include="Content\Fonts\" />
     <Folder Include="Content\Sounds\" />
-    <Folder Include="Content\Sprites\" />
     <Folder Include="Content\UI\" />
-    <Folder Include="Source\Components\" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />

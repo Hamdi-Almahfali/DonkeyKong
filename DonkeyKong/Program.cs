@@ -1,3 +1,3 @@
 ﻿
-using var game = new Template.Source.Main();
+using var game = new DonkeyKong.Source.Main();
 game.Run();

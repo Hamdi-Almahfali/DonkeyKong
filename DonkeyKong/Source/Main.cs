@@ -1,10 +1,10 @@
-﻿using Template.Source.Engine;
-using Template.Source.Managers;
+﻿using DonkeyKong.Source.Engine;
+using DonkeyKong.Source.Managers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Template.Source
+namespace DonkeyKong.Source
 {
     public class Main : Game
     {

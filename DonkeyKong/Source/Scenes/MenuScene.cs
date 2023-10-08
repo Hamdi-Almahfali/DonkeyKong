@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Template.Source.Engine;
-using Template.Source.Managers;
+using DonkeyKong.Source.Engine;
+using DonkeyKong.Source.Managers;
 
-namespace Template.Source.Scenes
+namespace DonkeyKong.Source.Scenes
 {
     internal class MenuScene : Component
     {

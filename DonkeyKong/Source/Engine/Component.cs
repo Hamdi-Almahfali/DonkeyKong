@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Template.Source.Engine
+namespace DonkeyKong.Source.Engine
 {
     internal abstract class Component
     {

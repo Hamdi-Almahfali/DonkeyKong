@@ -1,4 +1,4 @@
-﻿using Template.Source.Engine;
+﻿using DonkeyKong.Source.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Template.Source.Scenes;
+using DonkeyKong.Source.Scenes;
 
-namespace Template.Source.Managers
+namespace DonkeyKong.Source.Managers
 {
     internal class GameStateManager : Component
     {
@@ -21,7 +21,7 @@ namespace Template.Source.Managers
             Lost,
             Won
         }
-        public static GameState State { get; set; } = GameState.Menu;
+        public static GameState State { get; set; } = GameState.Game;
 
         private MenuScene menuScene = new MenuScene();
         private GameScene gameScene = new GameScene();
