@@ -7,7 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DonkeyKong.Source.Scenes;
+using DonkeyKong.Source.Scenes.GameScene;
+using DonkeyKong.Source.Scenes.MenuScene;
 
 namespace DonkeyKong.Source.Managers
 {

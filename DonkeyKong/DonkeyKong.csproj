@@ -11,12 +11,30 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\Sprites\air.png" />
+    <None Remove="Content\Sprites\bridge.png" />
+    <None Remove="Content\Sprites\combined.png" />
+    <None Remove="Content\Sprites\ladder.png" />
     <None Remove="Content\Sprites\marioMoving.png" />
+    <None Remove="Content\Sprites\wall - kopia.png" />
+    <None Remove="Content\Sprites\wall.png" />
     <None Remove="Content\UI\button0.png" />
     <None Remove="Icon.ico" />
     <None Remove="Icon.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Sprites\air.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\bridge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\combined.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\ladder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Sprites\marioMoving.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

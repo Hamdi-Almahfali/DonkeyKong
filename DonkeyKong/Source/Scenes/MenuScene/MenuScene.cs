@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using DonkeyKong.Source.Engine;
 using DonkeyKong.Source.Managers;
 
-namespace DonkeyKong.Source.Scenes
+namespace DonkeyKong.Source.Scenes.MenuScene
 {
     internal class MenuScene : Component
     {
@@ -28,7 +28,7 @@ namespace DonkeyKong.Source.Scenes
             for (int i = 0; i < buttons.Length; i++)
             {
                 buttons[i] = content.Load<Texture2D>($"button{i}");
-                buttonsBounds[i] = new Rectangle(0, 0 + (INCREMENT * i), buttons[i].Width, buttons[i].Height);
+                buttonsBounds[i] = new Rectangle(0, 0 + INCREMENT * i, buttons[i].Width, buttons[i].Height);
             }
         }
 
@@ -47,7 +47,7 @@ namespace DonkeyKong.Source.Scenes
         internal override void Draw(SpriteBatch spriteBatch)
         {
             // DRAW MENU BUTTONS
-            for (int i = 0; i < buttons.Length;i++)
+            for (int i = 0; i < buttons.Length; i++)
             {
                 spriteBatch.Draw(buttons[i], buttonsBounds[i], Color.White);
                 if (mouseRect.Intersects(buttonsBounds[i]))

@@ -1,5 +1,6 @@
 ﻿using DonkeyKong.Source.Engine;
 using DonkeyKong.Source.Managers;
+using DonkeyKong.Source.Scenes.GameScene;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -33,6 +34,7 @@ namespace DonkeyKong.Source
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            TextureHandler.LoadTextures(Content);
             gameStateManager.LoadContent(Content);
         }
 
