@@ -14,15 +14,16 @@ namespace DonkeyKong.Source.Scenes.GameScene
     {
         public Vector2 position;
         public Texture2D texture;
-        public bool notWalkable;
+        public bool walkable;
+        public bool isClimbable;
 
-        public Tile(Vector2 pos, Texture2D tex, bool notWalkable)
+        public Tile(Vector2 pos, Texture2D tex, bool notWalkable, bool isClimbable)
         {
             position = pos;
             texture = tex;
-            this.notWalkable = notWalkable;
+            this.walkable = notWalkable;
+            this.isClimbable = isClimbable;
         }
-
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, position, Color.White);

@@ -23,6 +23,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
 
         bool isAttacking;
         bool isMoving;
+        bool isClimbing;
 
         int frameWidth = 32;
         int frameHeight = 32;
@@ -51,21 +52,23 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             KeyMouseReader.Update();
             if (!isMoving)
             {
-                if (KeyMouseReader.KeyPressed(Keys.Up))
+                if (KeyMouseReader.KeyPressed(Keys.W))
                 {
-                    ChangeDirection(new Vector2(0, -1));
+                    ChangeClimbing(new Vector2(0, -1));
                 }
-                else if (KeyMouseReader.KeyPressed(Keys.Left))
+                else if (KeyMouseReader.KeyPressed(Keys.A))
                 {
                     ChangeDirection(new Vector2(-1, 0));
+                    spriteEffect = SpriteEffects.None;
                 }
-                else if (KeyMouseReader.KeyPressed(Keys.Down))
+                else if (KeyMouseReader.KeyPressed(Keys.S))
                 {
-                    ChangeDirection(new Vector2(0, 1));
+                    ChangeClimbing(new Vector2(0, 1));
                 }
-                else if (KeyMouseReader.KeyPressed(Keys.Right))
+                else if (KeyMouseReader.KeyPressed(Keys.D))
                 {
                     ChangeDirection(new Vector2(1, 0));
+                    spriteEffect = SpriteEffects.FlipHorizontally;
                 }
             }
             else
@@ -76,6 +79,17 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 {
                     position = destination;
                     isMoving = false;
+                    if (!GameScene.GetLadderAtPosition(position))
+                    {
+                        state = State.Moving;
+                        isClimbing = false;
+                        frame = 0;
+                    }
+                    else
+                    {
+                        isClimbing = false;
+                        frame = 0;
+                    }
                 }
             }
         }
@@ -89,10 +103,24 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             direction = dir;
             Vector2 newDestination = position + direction * 32;
 
-            if (!GameScene.GetTileAtPosition(newDestination))
+            if ((state == State.Moving && GameScene.GetTileAtPosition(newDestination)) || (state == State.Climbing && !GameScene.GetTileAtPosition(new Vector2(position.X, position.Y + 32))))
             {
                 destination = newDestination;
                 isMoving = true;
+                state = State.Moving;
+            }
+        }
+        public void ChangeClimbing(Vector2 dir)
+        {
+            direction = dir;
+            Vector2 newDestination = position + direction * 32;
+
+            if ((GameScene.GetTileAtPosition(newDestination) && GameScene.GetLadderAtPosition(position)) || (GameScene.GetLadderAtPosition(newDestination)))
+            {
+                destination = newDestination;
+                isMoving = true;
+                isClimbing = true;
+                state = State.Climbing;
             }
         }
         private void ApplyFrames()
@@ -141,6 +169,10 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             {
                 ApplyFrames();
                 srcRect = new Rectangle(frame * frameWidth, 0, frameWidth, frameHeight);
+            }
+            else if (state == State.Climbing && !isClimbing)
+            {
+                srcRect = new Rectangle(frame * frameWidth, 32, frameWidth, frameHeight);
             }
             else
             {

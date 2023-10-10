@@ -29,7 +29,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
             bg = content.Load<Texture2D>("Sprites\\background");
 
             CreateLevel("labyrint.txt");
-            player = new Player(new Vector2(6 * tileSize, 14 * tileSize), 80);
+            player = new Player(new Vector2(6 * tileSize, 15 * tileSize), 100);
             player.LoadContent(content);
         }
 
@@ -39,7 +39,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
         }
         internal override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(bg, new Vector2(0, 0), Color.White);
+            spriteBatch.Draw(bg, new Vector2(0, 0), Color.Black);
             foreach (Tile t in tileArray)
             {
                 t.Draw(spriteBatch);
@@ -72,23 +72,23 @@ namespace DonkeyKong.Source.Scenes.GameScene
                 {
                     if (list[i][j] == 'x')
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texLadder, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texLadder, true, true);
                     }
                     else if (list[i][j] == '+')
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texBarrier, true);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, false, false);
                     }
                     else if (list[i][j] == '#')
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texCombined, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texCombined, true, true);
                     }
                     else if (list[i][j] == '=')
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texBridge, true);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texBridge, false, false);
                     }
                     else
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
                     }
                 }
 
@@ -96,7 +96,11 @@ namespace DonkeyKong.Source.Scenes.GameScene
         }
         public static bool GetTileAtPosition(Vector2 pos)
         {
-            return tileArray[(int)pos.X / tileSize, (int)pos.Y / tileSize].notWalkable;
+            return tileArray[(int)pos.X / tileSize, (int)pos.Y / tileSize].walkable;
+        }
+        public static bool GetLadderAtPosition(Vector2 pos)
+        {
+            return tileArray[(int)pos.X / tileSize, (int)pos.Y / tileSize].isClimbable;
         }
     }
 }
