@@ -14,6 +14,7 @@
     <None Remove="Content\Sprites\air.png" />
     <None Remove="Content\Sprites\bridge.png" />
     <None Remove="Content\Sprites\combined.png" />
+    <None Remove="Content\Sprites\fire.png" />
     <None Remove="Content\Sprites\ladder.png" />
     <None Remove="Content\Sprites\marioMoving.png" />
     <None Remove="Content\Sprites\wall - kopia.png" />
@@ -30,6 +31,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Sprites\combined.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\fire.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Sprites\ladder.png">

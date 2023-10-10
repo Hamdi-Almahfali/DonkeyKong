@@ -23,26 +23,34 @@ namespace DonkeyKong.Source.Scenes.GameScene
 
         public static Tile[,] tileArray;
         public static int tileSize = 32;
+        public List<Enemy> enemyList;
 
         internal override void LoadContent(ContentManager content)
         {
             bg = content.Load<Texture2D>("Sprites\\background");
+            enemyList = new List<Enemy>();
 
-            CreateLevel("labyrint.txt");
-            player = new Player(new Vector2(6 * tileSize, 15 * tileSize), 100);
-            player.LoadContent(content);
+            CreateLevel("labyrint.txt", content);
         }
 
         internal override void Update(GameTime gameTime)
         {
             player.Update(gameTime);
+            foreach (Enemy en in enemyList)
+            {
+                en.Update(gameTime);
+            }
         }
         internal override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(bg, new Vector2(0, 0), Color.Black);
+            spriteBatch.Draw(bg, new Vector2(0, 0), Color.White);
             foreach (Tile t in tileArray)
             {
                 t.Draw(spriteBatch);
+            }
+            foreach (Enemy en in enemyList)
+            {
+                en.Draw(spriteBatch);
             }
             player.Draw(spriteBatch);
         }
@@ -59,8 +67,8 @@ namespace DonkeyKong.Source.Scenes.GameScene
             }
             streamReader.Close();
             return result;
-        }
-        public void CreateLevel(string fileName)
+        } // Read from input file
+        public void CreateLevel(string fileName, ContentManager content) // Create level from a file to read from
         {
             List<string> list = ReadFromFile("labyrint.txt");
 
@@ -86,6 +94,19 @@ namespace DonkeyKong.Source.Scenes.GameScene
                     {
                         tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texBridge, false, false);
                     }
+                    else if (list[i][j] == '0')
+                    {
+                        Enemy enemy = new Enemy(new Vector2(j * tileSize, i * tileSize));
+                        enemy.LoadContent(content);
+                        enemyList.Add(enemy);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                    }
+                    else if (list[i][j] == 'M')
+                    {
+                        player = new Player(new Vector2(j * tileSize, i * tileSize), 100);
+                        player.LoadContent(content);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                    }
                     else
                     {
                         tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
@@ -94,11 +115,11 @@ namespace DonkeyKong.Source.Scenes.GameScene
 
             }
         }
-        public static bool GetTileAtPosition(Vector2 pos)
+        public static bool GetTileAtPosition(Vector2 pos) // Returns true or false if the tile at specified position is walkable or not
         {
             return tileArray[(int)pos.X / tileSize, (int)pos.Y / tileSize].walkable;
         }
-        public static bool GetLadderAtPosition(Vector2 pos)
+        public static bool GetLadderAtPosition(Vector2 pos) // Returns true or false if the tile at specified position is climbable or not
         {
             return tileArray[(int)pos.X / tileSize, (int)pos.Y / tileSize].isClimbable;
         }
