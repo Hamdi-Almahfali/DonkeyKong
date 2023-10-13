@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DonkeyKong.Source.Engine
+namespace DonkeyKong.Source.Managers
 {
     internal class Timer
     {
@@ -18,9 +19,9 @@ namespace DonkeyKong.Source.Engine
         {
             return currentTime <= 0.0;
         }
-        public void Update(double deltaTime)
+        public void Update(GameTime gameTime)
         {
-            currentTime -= deltaTime;
+            currentTime -= gameTime.ElapsedGameTime.TotalSeconds;
         }
 
     }

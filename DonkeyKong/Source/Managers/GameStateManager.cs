@@ -27,6 +27,7 @@ namespace DonkeyKong.Source.Managers
         private MenuScene menuScene = new MenuScene();
         private GameScene gameScene = new GameScene();
 
+
         internal override void LoadContent(ContentManager content)
         {
             menuScene.LoadContent(content);

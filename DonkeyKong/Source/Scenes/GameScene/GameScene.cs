@@ -23,12 +23,16 @@ namespace DonkeyKong.Source.Scenes.GameScene
 
         public static Tile[,] tileArray;
         public static int tileSize = 32;
-        public List<Enemy> enemyList;
+        private List<Enemy> enemyList;
+        private List<Umbrella> pointlist;
+        private List<Hammer> hammerList;
 
         internal override void LoadContent(ContentManager content)
         {
             bg = content.Load<Texture2D>("Sprites\\background");
             enemyList = new List<Enemy>();
+            pointlist = new List<Umbrella>(); // List that includes all the umberllas that mario can take to gain extra score
+            hammerList = new List<Hammer>();
 
             CreateLevel("labyrint.txt", content);
         }
@@ -52,6 +56,14 @@ namespace DonkeyKong.Source.Scenes.GameScene
             {
                 en.Draw(spriteBatch);
             }
+            foreach (Umbrella point in pointlist)
+            {
+                point.Draw(spriteBatch);
+            }
+            foreach (Hammer hammer in hammerList)
+            {
+                hammer.Draw(spriteBatch);
+            }
             player.Draw(spriteBatch);
         }
         public List<string> ReadFromFile(string fileName)
@@ -70,7 +82,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
         } // Read from input file
         public void CreateLevel(string fileName, ContentManager content) // Create level from a file to read from
         {
-            List<string> list = ReadFromFile("labyrint.txt");
+            List<string> list = ReadFromFile("level0.txt");
 
             tileArray = new Tile[list[0].Length, list.Count];
 
@@ -78,7 +90,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
             {
                 for (int j = 0; j < list[0].Length; j++)
                 {
-                    if (list[i][j] == 'x')
+                    if (list[i][j] == 'H')
                     {
                         tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texLadder, true, true);
                     }
@@ -94,6 +106,18 @@ namespace DonkeyKong.Source.Scenes.GameScene
                     {
                         tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texBridge, false, false);
                     }
+                    else if (list[i][j] == 'J')
+                    {
+                        Umbrella point = new Umbrella(new Vector2(j * tileSize, i * tileSize));
+                        pointlist.Add(point);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                    }
+                    else if (list[i][j] == 'T')
+                    {
+                        Hammer hammer = new Hammer(new Vector2(j * tileSize, i * tileSize));
+                        hammerList.Add(hammer);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                    }
                     else if (list[i][j] == '0')
                     {
                         Enemy enemy = new Enemy(new Vector2(j * tileSize, i * tileSize));
@@ -103,7 +127,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
                     }
                     else if (list[i][j] == 'M')
                     {
-                        player = new Player(new Vector2(j * tileSize, i * tileSize), 100);
+                        player = new Player(new Vector2(j * tileSize, i * tileSize), 150);
                         player.LoadContent(content);
                         tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
                     }

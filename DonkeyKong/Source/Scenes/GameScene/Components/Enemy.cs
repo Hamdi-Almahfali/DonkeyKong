@@ -1,4 +1,5 @@
-﻿using DonkeyKong.Source.Engine;
+﻿using DonkeyKong.Source.Managers;
+using DonkeyKong.Source.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DonkeyKong.Source.Scenes.GameScene.Components
@@ -19,8 +21,10 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
 
         Random random = new Random();
         GameTime gameTime;
+        Managers.Timer speedTimer;
 
         bool isMoving;
+        int speedChangeInterval = 3;
 
         int frameWidth = 32;
         int frameHeight = 32;
@@ -35,12 +39,20 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         }
         internal override void LoadContent(ContentManager content)
         {
+            speedTimer = new Managers.Timer();
+            speedTimer.ResetAndStart(speedChangeInterval);
+
         }
 
         internal override void Update(GameTime gameTime)
         {
             this.gameTime = gameTime;
             MoveToTarget(gameTime);
+            speedTimer.Update(gameTime);
+            if (speedTimer.IsDone()) {
+                ChangeDirection();
+                speedTimer.ResetAndStart(speedChangeInterval);
+            }
 
         }
         internal override void Draw(SpriteBatch spriteBatch)
@@ -48,6 +60,22 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             Rectangle srcRect = new Rectangle(frame * frameWidth, 0, frameWidth, frameHeight);
             spriteBatch.Draw(texture, position, srcRect, Color.White);
         }
+        private void ChangeDirection()
+        {
+            int randomInt = random.Next(0, 2);
+            if (randomInt > 0)
+            {
+                speed = 50;
+            }
+            else
+            {
+                speed = 100;
+            }
+        }
+        /// <summary>
+        /// Move to target, moves object to a tile based distance in a set speed
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void MoveToTarget(GameTime gameTime)
         {
             float movementAmount = speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
