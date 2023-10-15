@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace DonkeyKong.Source.Scenes.GameScene.Components
 {
-    internal class Enemy : Component
+    internal class Enemy
     {
         Texture2D texture;
         Vector2 position;
@@ -24,6 +24,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         Managers.Timer speedTimer;
 
         bool isMoving;
+        bool defeated;
         int speedChangeInterval = 3;
 
         int frameWidth = 32;
@@ -32,33 +33,41 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         float frameInterval = 0.1f;  // Animation speed
         double frameTimer = 0;
 
+        Player player;
+
         public Enemy(Vector2 pos)
         {
             position = pos;
             texture = TextureHandler.texFire;
         }
-        internal override void LoadContent(ContentManager content)
+        internal void LoadContent(ContentManager content)
         {
             speedTimer = new Managers.Timer();
             speedTimer.ResetAndStart(speedChangeInterval);
+            defeated = false;
 
         }
 
-        internal override void Update(GameTime gameTime)
+        internal void Update(GameTime gameTime, Player player)
         {
-            this.gameTime = gameTime;
-            MoveToTarget(gameTime);
-            speedTimer.Update(gameTime);
-            if (speedTimer.IsDone()) {
-                ChangeDirection();
-                speedTimer.ResetAndStart(speedChangeInterval);
+            if (!defeated)
+            {
+                this.gameTime = gameTime;
+                MoveToTarget(gameTime);
+                speedTimer.Update(gameTime);
+                if (speedTimer.IsDone())
+                {
+                    ChangeDirection();
+                    speedTimer.ResetAndStart(speedChangeInterval);
+                }
+                CheckHammerCollision(player);
             }
-
         }
-        internal override void Draw(SpriteBatch spriteBatch)
+        internal void Draw(SpriteBatch spriteBatch)
         {
             Rectangle srcRect = new Rectangle(frame * frameWidth, 0, frameWidth, frameHeight);
-            spriteBatch.Draw(texture, position, srcRect, Color.White);
+            if (!defeated)
+                spriteBatch.Draw(texture, position, srcRect, Color.White);
         }
         private void ChangeDirection()
         {
@@ -98,6 +107,27 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             // Update the frame timer for the fire animations
             frameTimer = (frameTimer <= 0) ? frameInterval : frameTimer - (float)gameTime.ElapsedGameTime.TotalSeconds;
             frame = (frameTimer <= 0) ? 1 - frame : frame;
+        }
+        private Rectangle GetBounds()
+        {
+            Rectangle rect = new Rectangle((int)position.X, (int)position.Y, 32, 32);
+            return rect;
+
+        }
+        private void CheckHammerCollision(Player player)
+        {
+            if (player.GetRect().Intersects(GetBounds()) && player.isAttacking)
+            {
+                Defeat();
+            }
+            else if (player.GetRect().Intersects(GetBounds()) && !player.isHit)
+            {
+                player.GetHit();
+            }
+        }
+        private void Defeat()
+        {
+            defeated = true;
         }
 
     }

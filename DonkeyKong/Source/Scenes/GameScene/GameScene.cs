@@ -19,7 +19,10 @@ namespace DonkeyKong.Source.Scenes.GameScene
     internal class GameScene : Component
     {
         public Player player;
+        private HUD hud;
         private Texture2D bg;
+        public const int maxHearts = 3;
+        public static int currentHearts = maxHearts;
 
         public static Tile[,] tileArray;
         public static int tileSize = 32;
@@ -29,20 +32,26 @@ namespace DonkeyKong.Source.Scenes.GameScene
 
         internal override void LoadContent(ContentManager content)
         {
+            hud = new HUD();
             bg = content.Load<Texture2D>("Sprites\\background");
             enemyList = new List<Enemy>();
             pointlist = new List<Umbrella>(); // List that includes all the umberllas that mario can take to gain extra score
             hammerList = new List<Hammer>();
 
-            CreateLevel("labyrint.txt", content);
+            CreateLevel("level0.txt", content);
         }
 
         internal override void Update(GameTime gameTime)
         {
             player.Update(gameTime);
+            hud.Update(gameTime, currentHearts);
             foreach (Enemy en in enemyList)
             {
-                en.Update(gameTime);
+                en.Update(gameTime, player);
+            }
+            foreach (Hammer hammer in hammerList)
+            {
+                hammer.Update(gameTime, player);
             }
         }
         internal override void Draw(SpriteBatch spriteBatch)
@@ -65,6 +74,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
                 hammer.Draw(spriteBatch);
             }
             player.Draw(spriteBatch);
+            hud.Draw(spriteBatch);
         }
         public List<string> ReadFromFile(string fileName)
         {

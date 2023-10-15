@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace DonkeyKong.Source.Scenes.GameScene.Components
 {
-    internal class Hammer : Component
+    internal class Hammer
     {
         Texture2D texture;
         Vector2 position;
@@ -25,21 +26,30 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             rect = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
         }
 
-        internal override void LoadContent(ContentManager content)
+        internal void LoadContent(ContentManager content)
         {
         }
 
-        internal override void Update(GameTime gameTime)
+        internal void Update(GameTime gameTime, Player player)
         {
+            // Collect item if player collides with it
+            if (rect.Intersects(player.GetRect()) && !collected)
+            {
+                CollectItem(player);
+            }
         }
-        internal override void Draw(SpriteBatch spriteBatch)
+        internal void Draw(SpriteBatch spriteBatch)
         {
             if (!collected)
                 spriteBatch.Draw(texture, position, Color.White);
         }
-        public void CollectItem() // Turns the item into a collected one
+        private void CollectItem(Player player) // Turns the item into a collected one
         {
-            collected = true;
+            if (player.isAttacking == false)
+            {
+                collected = true;
+                player.ApplySuperPower();
+            }
         }
     }
 }

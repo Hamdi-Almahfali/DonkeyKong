@@ -1,4 +1,5 @@
-﻿using DonkeyKong.Source.Engine;
+﻿using DonkeyKong.Source.Managers;
+using DonkeyKong.Source.Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,19 +12,25 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
 {
     internal class Player : Component
     {
-        public enum State { Moving, Climbing }
-        State state = State.Moving;
+        public enum State { Moving, Climbing, Attacking }
+        public State state = State.Moving;
 
         Texture2D texture;
         Vector2 position;
         Vector2 direction;
         Vector2 destination;
+
         float speed;
+        public Rectangle playerRect { get; private set; }
+        public Rectangle attackRect { get; private set; }
+        private Timer superPowerTimer;
+        public Timer hitTimer;
         SpriteEffects spriteEffect = SpriteEffects.None; // To mirror mario
 
-        bool isAttacking;
+        public bool isAttacking;
         bool isMoving;
         bool isClimbing;
+        public bool isHit;
 
         int frameWidth = 32;
         int frameHeight = 32;
@@ -44,12 +51,22 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         internal override void LoadContent(ContentManager content)
         {
             texture = content.Load<Texture2D>("Sprites\\marioMoving");
+            playerRect = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+            attackRect = new Rectangle((int)position.X - texture.Width, (int)position.Y - texture.Height, texture.Width + texture.Width, texture.Height + texture.Height);
+            superPowerTimer = new Timer();
+            hitTimer = new Timer();
+            isAttacking = false;
+            isHit = false;
         }
 
         internal override void Update(GameTime gameTime)
         {
+            // Update attack rectangle
+            attackRect = new Rectangle((int)position.X - frameWidth, (int)position.Y - frameHeight, texture.Width, texture.Height - frameHeight);
             this.gameTime = gameTime;
             KeyMouseReader.Update();
+            SuperPowerBehavior(gameTime);
+            HitBehavior(gameTime);
             if (!isMoving)
             {
                 if (KeyMouseReader.KeyPressed(Keys.W))
@@ -96,9 +113,31 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         internal override void Draw(SpriteBatch spriteBatch)
         {
             Rectangle srcRect = ApplyTexture();
-            spriteBatch.Draw(texture, position, srcRect, Color.White, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+            if (!isHit)
+                spriteBatch.Draw(texture, position, srcRect, Color.White, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+            else
+                spriteBatch.Draw(texture, position, srcRect, Color.Red, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+
+            // Play animation of player attacking or stop
+            if (isAttacking)
+            {
+                Rectangle hammerRect;
+                if (frame == 0)
+                {
+                     hammerRect = new Rectangle(0, 0, frameWidth * 3, frameHeight * 3);
+                }
+                else if (frame != 0 && state != State.Climbing)
+                {
+                     hammerRect = new Rectangle(frameWidth * 3, 0, frameWidth * 3, frameHeight * 3);
+                }
+                else
+                {
+                    hammerRect = new Rectangle(0, 0, frameWidth * 3, frameHeight * 3);
+                }
+                spriteBatch.Draw(TextureHandler.texHammerAttack, position - new Vector2(frameWidth, frameHeight), hammerRect, Color.White, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+            }
         }
-        public void ChangeDirection(Vector2 dir)
+        private void ChangeDirection(Vector2 dir)
         {
             direction = dir;
             Vector2 newDestination = position + direction * 32;
@@ -110,7 +149,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 state = State.Moving;
             }
         }
-        public void ChangeClimbing(Vector2 dir)
+        private void ChangeClimbing(Vector2 dir)
         {
             direction = dir;
             Vector2 newDestination = position + direction * 32;
@@ -125,7 +164,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         }
         private void ApplyFrames()
         {
-            if (state == State.Moving)
+            if (state == State.Moving && !isAttacking)
             {
                 frameTimer -= gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -135,6 +174,21 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                     frameTimer = frameInterval;
                     frame++;
                     if (frame > 2)
+                    {
+                        frame = 0;
+                    }
+                }
+            }
+            else if (state == State.Moving && isAttacking)
+            {
+                frameTimer -= gameTime.ElapsedGameTime.TotalSeconds / 2;
+
+                // If enough time has passed for the next frame
+                if (frameTimer <= 0)
+                {
+                    frameTimer = frameInterval;
+                    frame++;
+                    if (frame > 1)
                     {
                         frame = 0;
                     }
@@ -155,20 +209,24 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                     }
                 }
             }
-
         }
-        public Rectangle ApplyTexture()
+        private Rectangle ApplyTexture()
         {
-            Rectangle srcRect = new Rectangle(0, 0, 16, 16);
+            Rectangle srcRect;
 
-            if (state == State.Moving && !isMoving)
+            if (state == State.Moving && !isMoving && !isAttacking)
             {
                 srcRect = new Rectangle(0, 0, frameWidth, frameHeight);
             }
-            else if (state == State.Moving)
+            else if (state == State.Moving && !isAttacking)
             {
                 ApplyFrames();
                 srcRect = new Rectangle(frame * frameWidth, 0, frameWidth, frameHeight);
+            }
+            else if (state == State.Moving) // Apply hammer frames
+            {
+                ApplyFrames();
+                srcRect = new Rectangle(frame * frameWidth, 64, frameWidth, frameHeight);
             }
             else if (state == State.Climbing && !isClimbing)
             {
@@ -180,6 +238,49 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 srcRect = new Rectangle(frame * frameWidth, 32, frameWidth, frameHeight);
             }
             return srcRect;
+        }
+        public Rectangle GetRect() // Returns the player's bounds
+        {
+            if (isAttacking)
+            {
+                return attackRect;
+            }
+            else
+            {
+                playerRect = new Rectangle((int)position.X, (int)position.Y, frameWidth, frameHeight);
+                return playerRect;
+            }
+            
+        }
+        public void ApplySuperPower()
+        {
+            superPowerTimer.ResetAndStart(7.0f);
+            isAttacking = true;
+        }
+        private void SuperPowerBehavior(GameTime gameTime) // Manage all the behavior for the hammer
+        {
+            superPowerTimer.Update(gameTime);
+            if (superPowerTimer.IsDone())
+            {
+                isAttacking = false;
+                return;
+            }
+            
+        }
+        public void GetHit()
+        {
+            isHit = true;
+            hitTimer.ResetAndStart(2.0f);
+            GameScene.currentHearts--;
+        }
+        private void HitBehavior(GameTime gameTime)
+        {
+            hitTimer.Update(gameTime);
+            if (hitTimer.IsDone())
+            {
+                isHit = false;
+                return;
+            }
         }
     }
 }

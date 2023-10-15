@@ -17,9 +17,11 @@ namespace DonkeyKong.Source.Scenes.GameScene
         public static Texture2D texAir;
 
         public static Texture2D texFire;
+        public static Texture2D texHeart;
 
         public static Texture2D texHammer;
         public static Texture2D texUmbrella;
+        public static Texture2D texHammerAttack;
 
         public static void LoadTextures(ContentManager content)
         {
@@ -30,8 +32,10 @@ namespace DonkeyKong.Source.Scenes.GameScene
             texAir = content.Load<Texture2D>("Sprites\\air");
 
             texFire = content.Load<Texture2D>("Sprites\\fire");
+            texHeart = content.Load<Texture2D>("Sprites\\heart");
 
             texHammer = content.Load<Texture2D>("Sprites\\extra");
+            texHammerAttack = content.Load<Texture2D>("Sprites\\hammerAttack");
             texUmbrella = content.Load<Texture2D>("Sprites\\umbrella");
         }
     }
