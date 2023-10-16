@@ -214,31 +214,40 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         {
             Rectangle srcRect;
 
-            if (state == State.Moving && !isMoving && !isAttacking)
+            if (state == State.Moving) // If the character isnt in a state of climbing
             {
-                srcRect = new Rectangle(0, 0, frameWidth, frameHeight);
+                if (!isMoving && !isAttacking) // if the character is standing still
+                    srcRect = new Rectangle(0, 0, frameWidth, frameHeight);
+                else if (!isAttacking) // if the characer is moving but not attacking
+                {
+                    srcRect = new Rectangle(frame * frameWidth, 0, frameWidth, frameHeight);
+                    ApplyFrames();
+                }
+                else // if the character is attacking
+                {
+                    ApplyFrames();
+                    srcRect = new Rectangle(frame * frameWidth, 64, frameWidth, frameHeight); // Apply hammer frames
+                }
             }
-            else if (state == State.Moving && !isAttacking)
+            else if (state == State.Climbing)
             {
-                ApplyFrames();
-                srcRect = new Rectangle(frame * frameWidth, 0, frameWidth, frameHeight);
-            }
-            else if (state == State.Moving) // Apply hammer frames
-            {
-                ApplyFrames();
-                srcRect = new Rectangle(frame * frameWidth, 64, frameWidth, frameHeight);
-            }
-            else if (state == State.Climbing && !isClimbing)
-            {
-                srcRect = new Rectangle(frame * frameWidth, 32, frameWidth, frameHeight);
+                if (!isClimbing) // if the character is on the ladder but isnt climbing
+                    srcRect = new Rectangle(frame * frameWidth, 32, frameWidth, frameHeight);
+                else // if the character is climbing
+                {
+                    ApplyFrames();
+                    srcRect = new Rectangle(frame * frameWidth, 32, frameWidth, frameHeight);
+                }
             }
             else
             {
                 ApplyFrames();
                 srcRect = new Rectangle(frame * frameWidth, 32, frameWidth, frameHeight);
             }
+
             return srcRect;
         }
+
         public Rectangle GetRect() // Returns the player's bounds
         {
             if (isAttacking)

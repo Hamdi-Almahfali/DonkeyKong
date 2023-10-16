@@ -20,20 +20,27 @@ namespace DonkeyKong.Source.Scenes.GameScene
     {
         public Player player;
         private HUD hud;
-        private Texture2D bg;
+        private ScoreManager scoreManager;
+
         public const int maxHearts = 3;
         public static int currentHearts = maxHearts;
 
         public static Tile[,] tileArray;
         public static int tileSize = 32;
+
         private List<Enemy> enemyList;
         private List<Umbrella> pointlist;
         private List<Hammer> hammerList;
+
+        private Texture2D bg;
 
         internal override void LoadContent(ContentManager content)
         {
             hud = new HUD();
             bg = content.Load<Texture2D>("Sprites\\background");
+            scoreManager = new ScoreManager();
+            scoreManager.LoadContent(content);
+
             enemyList = new List<Enemy>();
             pointlist = new List<Umbrella>(); // List that includes all the umberllas that mario can take to gain extra score
             hammerList = new List<Hammer>();
@@ -45,6 +52,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
         {
             player.Update(gameTime);
             hud.Update(gameTime, currentHearts);
+
             foreach (Enemy en in enemyList)
             {
                 en.Update(gameTime, player);
@@ -53,10 +61,14 @@ namespace DonkeyKong.Source.Scenes.GameScene
             {
                 hammer.Update(gameTime, player);
             }
+            foreach (Umbrella um in pointlist)
+            {
+                um.Update(gameTime, player, scoreManager);
+            }
         }
         internal override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(bg, new Vector2(0, 0), Color.White);
+            spriteBatch.Draw(bg, new Vector2(0, 0), Color.Black);
             foreach (Tile t in tileArray)
             {
                 t.Draw(spriteBatch);
@@ -75,6 +87,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
             }
             player.Draw(spriteBatch);
             hud.Draw(spriteBatch);
+            scoreManager.Draw(spriteBatch);
         }
         public List<string> ReadFromFile(string fileName)
         {

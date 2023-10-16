@@ -18,6 +18,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         Texture2D texture;
         Vector2 position;
         float speed = 50;
+        private int direction = 1;
 
         Random random = new Random();
         GameTime gameTime;
@@ -87,17 +88,18 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         /// <param name="gameTime"></param>
         public void MoveToTarget(GameTime gameTime)
         {
-            float movementAmount = speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float movementAmount = speed * direction * (float)gameTime.ElapsedGameTime.TotalSeconds;
             float nextPositionX = position.X + movementAmount;
-            int nextTileX = (int)((nextPositionX + (speed > 0 ? frameWidth / 2 : -frameWidth / 2)) / frameWidth);
+
+            int nextTileX = (int)((nextPositionX + (direction > 0 ? frameWidth / 2 : -frameWidth / 2)) / frameWidth);
 
             // Check if the next tile is walkable
             bool isNextTileWalkable = GameScene.GetTileAtPosition(new Vector2(nextTileX * frameWidth, position.Y));
 
             if (!isNextTileWalkable)
             {
-                speed = -speed;
-                position.X += movementAmount * 2 * Math.Sign(speed);
+                direction = -direction;
+                position.X += movementAmount * 2 * direction;
             }
             else
             {
@@ -108,6 +110,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             frameTimer = (frameTimer <= 0) ? frameInterval : frameTimer - (float)gameTime.ElapsedGameTime.TotalSeconds;
             frame = (frameTimer <= 0) ? 1 - frame : frame;
         }
+
         private Rectangle GetBounds()
         {
             Rectangle rect = new Rectangle((int)position.X, (int)position.Y, 32, 32);
