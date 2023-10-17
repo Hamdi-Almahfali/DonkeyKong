@@ -11,6 +11,7 @@ using DonkeyKong.Source.Scenes.GameScene;
 using DonkeyKong.Source.Scenes.MenuScene;
 using DonkeyKong.Source.Scenes.LostScene;
 using DonkeyKong.Source.Scenes.WinScene;
+using Microsoft.Xna.Framework.Media;
 
 namespace DonkeyKong.Source.Managers
 {
@@ -31,6 +32,12 @@ namespace DonkeyKong.Source.Managers
         private LostScene lostScene = new LostScene();
         private WinScene winScene = new WinScene();
 
+        public static Song menuSong;
+        public static Song stageSong;
+        public static Song lostSong;
+        public static Song winSong;
+        public static Song hammerSong;
+
 
         internal override void LoadContent(ContentManager content)
         {
@@ -38,6 +45,12 @@ namespace DonkeyKong.Source.Managers
             gameScene.LoadContent(content);
             lostScene.LoadContent(content);
             winScene.LoadContent(content);
+
+            menuSong = content.Load<Song>("Sounds\\menuSong");
+            stageSong = content.Load<Song>("Sounds\\stageSong");
+            lostSong = content.Load<Song>("Sounds\\missSong");
+            winSong = content.Load<Song>("Sounds\\winSong");
+            hammerSong = content.Load<Song>("Sounds\\hammerSong");
         }
 
         internal override void Update(GameTime gameTime)
@@ -48,9 +61,17 @@ namespace DonkeyKong.Source.Managers
                 case GameState.Menu:
                     menuScene.Update(gameTime);
                     KeyMouseReader.Update();
+                    if (MediaPlayer.State != MediaState.Playing)
+                    {
+                        MediaPlayer.Play(menuSong);
+                    }
                     break;
                 case GameState.Game:
                     gameScene.Update(gameTime);
+                    if (MediaPlayer.State != MediaState.Playing)
+                    {
+                        MediaPlayer.Play(stageSong);
+                    }
                     break;
                 case GameState.Settings:
                     break;
@@ -59,6 +80,10 @@ namespace DonkeyKong.Source.Managers
                     break;
                 case GameState.Won:
                     winScene.Update(gameTime);
+                    if (MediaPlayer.State != MediaState.Playing)
+                    {
+                        MediaPlayer.Play(winSong);
+                    }
                     break;
             }
         }

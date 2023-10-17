@@ -49,7 +49,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         public void CollectItem()
         {
             collected = true;
-            GameScene.totalCements --;
+            GameScene.totalCements--;
             sndInstance.Play();
         }
     }

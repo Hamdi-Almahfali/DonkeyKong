@@ -18,7 +18,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         Vector2 position;
         Vector2 initialPosition;
 
-        private int score;
+        private const int score = 500;
         private float displayTimer; 
         private bool displayScore;
 
@@ -32,7 +32,6 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             texture = ContentLoader.texUmbrella;
             this.position = position;
             initialPosition = position;
-            score = 500;
             displayTimer = 0f;
             displayScore = false;
             rect = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);

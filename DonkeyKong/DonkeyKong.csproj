@@ -11,6 +11,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Content\sounds\hit2.wav" />
     <None Remove="Content\Sprites\air.png" />
     <None Remove="Content\Sprites\bridge.png" />
     <None Remove="Content\Sprites\combined.png" />

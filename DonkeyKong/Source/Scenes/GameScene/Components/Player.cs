@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.Xna.Framework.Media;
 
 namespace DonkeyKong.Source.Scenes.GameScene.Components
 {
@@ -75,11 +76,13 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 if (!isDead)
                 {
                     isDead = true;
-                    deathTimer.ResetAndStart(3.0f);
+                    deathTimer.ResetAndStart(1.8f);
+                    MediaPlayer.Stop();
+                    MediaPlayer.Play(GameStateManager.lostSong);
                 }
                 DeathBehavior(gameTime);
             }
-            if (!isDead)
+            if (!isDead) // MOVEMENT
             {
 
                 if (!isMoving)
@@ -287,14 +290,20 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         }
         public void ApplySuperPower()
         {
-            superPowerTimer.ResetAndStart(7.0f);
-            isAttacking = true;
+            if (superPowerTimer.IsDone() && !isAttacking)
+            {
+                superPowerTimer.ResetAndStart(7.0f);
+                isAttacking = true;
+                MediaPlayer.Stop();
+                MediaPlayer.Play(GameStateManager.hammerSong);
+            }
         }
         private void SuperPowerBehavior(GameTime gameTime) // Manage all the behavior for the hammer
         {
             superPowerTimer.Update(gameTime);
-            if (superPowerTimer.IsDone())
+            if (superPowerTimer.IsDone() && isAttacking)
             {
+                MediaPlayer.Stop();
                 isAttacking = false;
                 return;
             }

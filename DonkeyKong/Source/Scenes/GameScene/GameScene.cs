@@ -13,6 +13,7 @@ using DonkeyKong.Source.Scenes.GameScene.Components;
 using System.IO;
 using System.Reflection.Metadata;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Media;
 
 namespace DonkeyKong.Source.Scenes.GameScene
 {
@@ -41,6 +42,10 @@ namespace DonkeyKong.Source.Scenes.GameScene
         public Lover lover;
 
         private Texture2D bg;
+        GameTime gameTime;
+
+        Timer bonusTimer;
+        public static int bonus;
 
         internal override void LoadContent(ContentManager content)
         {
@@ -55,16 +60,27 @@ namespace DonkeyKong.Source.Scenes.GameScene
             cementList = new List<Cement>();
 
             CreateLevel("level0.txt", content);
+
+            bonus = 4;
+            bonusTimer = new Timer();
+            bonusTimer.ResetAndStart(18.0f);
         }
 
         internal override void Update(GameTime gameTime)
         {
+            this.gameTime = gameTime;
             player.Update(gameTime);
             hud.Update(gameTime, currentHearts);
+            bonusTimer.Update(gameTime);
+            if (bonusTimer.IsDone())
+            {
+                bonus--;
+                bonusTimer.ResetAndStart(12.0f);
+            }
 
             foreach (Enemy en in enemyList)
             {
-                en.Update(gameTime, player);
+                en.Update(gameTime, player, scoreManager);
             }
             foreach (Hammer hammer in hammerList)
             {
@@ -117,6 +133,10 @@ namespace DonkeyKong.Source.Scenes.GameScene
 
             hud.Draw(spriteBatch);
             scoreManager.Draw(spriteBatch);
+            // Draw bonus points
+            Vector2 bonusPos = new Vector2(32, 176);
+            spriteBatch.Draw(ContentLoader.texBonus, bonusPos, Color.White);
+            spriteBatch.DrawString(ScoreManager.font, GameScene.bonus.ToString() + "x", new Vector2(bonusPos.X + 25, bonusPos.Y + 15), Color.White);
         }
         public List<string> ReadFromFile(string fileName)
         {
@@ -232,6 +252,8 @@ namespace DonkeyKong.Source.Scenes.GameScene
         {
             scoreManager.UpdateHighScores();
             GameStateManager.State = GameStateManager.GameState.Won;
+            MediaPlayer.Stop();
+            MediaPlayer.Play(GameStateManager.winSong);
         }
     }
 }

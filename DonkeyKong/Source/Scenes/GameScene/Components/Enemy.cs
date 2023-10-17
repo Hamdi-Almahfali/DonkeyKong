@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Audio;
 
 namespace DonkeyKong.Source.Scenes.GameScene.Components
 {
@@ -24,6 +25,9 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         GameTime gameTime;
         Managers.Timer speedTimer;
         Managers.Timer AppearTimer;
+
+        SoundEffectInstance sndInstanceDeath;
+        SoundEffectInstance sndInstanceHit;
 
         bool hasAppeared;
         bool defeated;
@@ -53,9 +57,11 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
 
             defeated = false;
 
+            sndInstanceDeath = ContentLoader.sndFireDeath.CreateInstance();
+            sndInstanceHit = ContentLoader.sndHit.CreateInstance();
         }
 
-        internal void Update(GameTime gameTime, Player player)
+        internal void Update(GameTime gameTime, Player player, ScoreManager scoreManager)
         {
             if (!defeated && hasAppeared)
             {
@@ -67,7 +73,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                     ChangeDirection();
                     speedTimer.ResetAndStart(speedChangeInterval);
                 }
-                CheckHammerCollision(player);
+                CheckHammerCollision(player, scoreManager);
             }
             if (AppearTimer.IsDone())
             {
@@ -131,21 +137,27 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             return rect;
 
         }
-        private void CheckHammerCollision(Player player)
+        private void CheckHammerCollision(Player player, ScoreManager scoreManager)
         {
             if (player.GetRect().Intersects(GetBounds()) && player.isAttacking)
             {
-                Defeat();
+                Defeat(scoreManager);
             }
             else if (player.GetRect().Intersects(GetBounds()) && !player.isHit)
             {
                 player.GetHit();
                 ScoreManager.currentScore -= 150;
+                sndInstanceHit.Play();
             }
         }
-        private void Defeat()
+        private void Defeat(ScoreManager scoreManager)
         {
-            defeated = true;
+            if (!defeated)
+            {
+                scoreManager.UpdateCurrentScore(200);
+                sndInstanceDeath.Play();
+                defeated = true;
+            }
         }
 
     }

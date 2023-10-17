@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace DonkeyKong.Source.Scenes.MenuScene
     internal class MenuScene : Component
     {
         private Texture2D bg;
+        
 
         internal override void LoadContent(ContentManager content)
         {
@@ -27,6 +29,8 @@ namespace DonkeyKong.Source.Scenes.MenuScene
             if (KeyMouseReader.KeyPressed(Keys.Space))
             {
                 GameStateManager.State = GameStateManager.GameState.Game;
+                MediaPlayer.Stop();
+                MediaPlayer.Play(GameStateManager.stageSong);
             }
         }
         internal override void Draw(SpriteBatch spriteBatch)

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using DonkeyKong.Source.Scenes.GameScene;
 
 namespace DonkeyKong.Source.Managers
 {
@@ -14,9 +15,11 @@ namespace DonkeyKong.Source.Managers
     {
         public static int currentScore;
         private static List<int> highScores;
+
         public static SpriteFont font;
         int tileSize = 32;
         private string filePath = "highscores.txt";
+
 
         public int CurrentScore { get; private set; }
 
@@ -33,10 +36,11 @@ namespace DonkeyKong.Source.Managers
         public void LoadContent(ContentManager content)
         {
             font = content.Load<SpriteFont>("Font");
+            
         }
         public void UpdateCurrentScore(int scoreToAdd)
         {
-            currentScore += scoreToAdd;
+            currentScore += scoreToAdd * GameScene.bonus;
         }
 
         public void LoadHighScores()
@@ -104,13 +108,12 @@ namespace DonkeyKong.Source.Managers
             // Measure the size of the text
             Vector2 textSize = font.MeasureString(text);
 
-            // Calculate the position to center the text
             float x = (graphicsDevice.Viewport.Width - textSize.X) / 2;
 
-            // Iterate through the characters in the text and draw them
+            // Draw each letter
             for (int i = 0; i < text.Length; i++)
             {
-                float alpha = (float)i / text.Length; // Alpha based on the position of the character
+                float alpha = (float)i / text.Length;
                 Color characterColor = new Color(color.R, color.G, color.B, alpha);
 
                 spriteBatch.DrawString(font, text[i].ToString(), new Vector2(x, y), characterColor);
