@@ -22,7 +22,6 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         private int direction = 1;
 
         Random random = new Random();
-        GameTime gameTime;
         Managers.Timer speedTimer;
         Managers.Timer AppearTimer;
 
@@ -65,7 +64,6 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         {
             if (!defeated && hasAppeared)
             {
-                this.gameTime = gameTime;
                 MoveToTarget(gameTime);
                 speedTimer.Update(gameTime);
                 if (speedTimer.IsDone())

@@ -29,7 +29,7 @@ namespace DonkeyKong.Source
             // INITIALIZE GAME STATE
             gameStateManager = new();
 
-            Window.Title = "Donkey Kong classic";
+            Window.Title = "Donkey Kong Classic (1981)";
 
             base.Initialize();
         }

@@ -75,6 +75,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
             if (bonusTimer.IsDone())
             {
                 bonus--;
+                bonus = Math.Max(1, bonus);
                 bonusTimer.ResetAndStart(12.0f);
             }
 
@@ -96,7 +97,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
             }
             button.Update(gameTime, player);
             barrel.Update(gameTime, button);
-            donkeyKong.Update(gameTime);
+            donkeyKong.Update();
 
             if (totalCements <= 0)
                 WinGame();

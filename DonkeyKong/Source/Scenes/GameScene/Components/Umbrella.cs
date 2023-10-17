@@ -38,10 +38,6 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             sndInstance = ContentLoader.sndPling.CreateInstance();
         }
 
-        internal void LoadContent(ContentManager content)
-        {
-        }
-
         internal void Update(GameTime gameTime, Player player, ScoreManager scoreManager)
         {
             if (displayScore)

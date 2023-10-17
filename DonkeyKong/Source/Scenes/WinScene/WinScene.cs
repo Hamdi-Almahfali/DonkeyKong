@@ -37,7 +37,7 @@ namespace DonkeyKong.Source.Scenes.WinScene
 
         internal override void Update(GameTime gameTime)
         {
-            donkeyKong.Update(gameTime);
+            donkeyKong.Update();
         }
         internal override void Draw(SpriteBatch spriteBatch)
         {

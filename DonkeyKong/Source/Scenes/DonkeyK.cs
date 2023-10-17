@@ -22,7 +22,7 @@ namespace DonkeyKong.Source.Scenes
             texture = ContentLoader.texDonkeyK;
             isFalling = false;
         }
-        public void Update(GameTime gameTime)
+        public void Update()
         {
             if (isFalling && position.Y <= 440)
             {
