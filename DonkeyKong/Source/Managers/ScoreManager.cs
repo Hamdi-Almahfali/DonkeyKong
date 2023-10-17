@@ -12,10 +12,10 @@ namespace DonkeyKong.Source.Managers
 {
     public class ScoreManager
     {
-        private int currentScore;
-        private List<int> highScores;
+        public static int currentScore;
+        private static List<int> highScores;
         public static SpriteFont font;
-
+        int tileSize = 32;
         private string filePath = "highscores.txt";
 
         public int CurrentScore { get; private set; }
@@ -76,18 +76,46 @@ namespace DonkeyKong.Source.Managers
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-            Vector2 pos = new Vector2(210, 40);
+            Vector2 pos = new Vector2(32, 144);
             spriteBatch.DrawString(font, "Score " + currentScore.ToString(), pos, Color.White);
-            spriteBatch.DrawString(font, "Highscores", new Vector2(32, 112), Color.Yellow);
 
+        }
+        public void DisplayHighscores(SpriteBatch spriteBatch)
+        {
             // Display up to the top 5 high scores
             int numScoresToDisplay = Math.Min(5, highScores.Count);
             for (int i = 0; i < numScoresToDisplay; i++)
             {
                 if (i == 0)
-                    spriteBatch.DrawString(font, "High Score " + highScores[i].ToString(), new Vector2(32, 144 + (20 * i)), Color.White);
+                {
+                    WriteText(spriteBatch, tileSize * 3, font, "Your score", Color.Yellow,Main.graphics.GraphicsDevice);
+                    WriteText(spriteBatch, tileSize * 4, font, currentScore.ToString(), Color.White,Main.graphics.GraphicsDevice);
+                    WriteText(spriteBatch, tileSize * 6, font, "Highscores", Color.Yellow,Main.graphics.GraphicsDevice);
+                    WriteText(spriteBatch, tileSize * 7 + (20 * i), font, highScores[i].ToString(), Color.White, Main.graphics.GraphicsDevice);
+
+                }
                 else
-                    spriteBatch.DrawString(font, "Score " + highScores[i].ToString(), new Vector2(32, 144 + (20 * i)), Color.White);
+                    WriteText(spriteBatch, tileSize * 7 + (20 * i), font, highScores[i].ToString(), Color.White, Main.graphics.GraphicsDevice);
+            }
+        }
+        // Function to write text from the middle of the screen
+        public void WriteText(SpriteBatch spriteBatch, float y, SpriteFont font, string text, Color color, GraphicsDevice graphicsDevice)
+        {
+            // Measure the size of the text
+            Vector2 textSize = font.MeasureString(text);
+
+            // Calculate the position to center the text
+            float x = (graphicsDevice.Viewport.Width - textSize.X) / 2;
+
+            // Iterate through the characters in the text and draw them
+            for (int i = 0; i < text.Length; i++)
+            {
+                float alpha = (float)i / text.Length; // Alpha based on the position of the character
+                Color characterColor = new Color(color.R, color.G, color.B, alpha);
+
+                spriteBatch.DrawString(font, text[i].ToString(), new Vector2(x, y), characterColor);
+
+                x += font.MeasureString(text[i].ToString()).X;
             }
         }
     }

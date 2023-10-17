@@ -9,7 +9,7 @@ namespace DonkeyKong.Source.Engine
 {
     internal static class Data
     {
-        public static int ScreenW { get; private set; } = 960;
+        public static int ScreenW { get; private set; } = 992;
         public static int ScreenH { get; private set; } = 636;
 
         // CHANGE SCREEN SIZE TO PREFERRED SIZE

@@ -1,4 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using DonkeyKong.Source.Engine;
+using DonkeyKong.Source.Managers;
+using DonkeyKong.Source.Scenes.GameScene;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -7,27 +10,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DonkeyKong.Source.Engine;
-using DonkeyKong.Source.Managers;
-using DonkeyKong.Source.Scenes.GameScene;
 
-namespace DonkeyKong.Source.Scenes.MenuScene
+namespace DonkeyKong.Source.Scenes.LostScene
 {
-    internal class MenuScene : Component
+    internal class LostScene : Component
     {
-        private Texture2D bg;
-
+        Texture2D bg;
         internal override void LoadContent(ContentManager content)
         {
-            bg = content.Load<Texture2D>("Sprites\\start");
+            bg = content.Load<Texture2D>("Sprites\\lost");
         }
 
         internal override void Update(GameTime gameTime)
         {
-            if (KeyMouseReader.KeyPressed(Keys.Space))
-            {
-                GameStateManager.State = GameStateManager.GameState.Game;
-            }
         }
         internal override void Draw(SpriteBatch spriteBatch)
         {

@@ -25,12 +25,20 @@ namespace DonkeyKong.Source.Scenes.GameScene
         public const int maxHearts = 3;
         public static int currentHearts = maxHearts;
 
+        public static int totalCements;
+
         public static Tile[,] tileArray;
         public static int tileSize = 32;
 
         private List<Enemy> enemyList;
         private List<Umbrella> pointlist;
         private List<Hammer> hammerList;
+        private List<Cement> cementList;
+
+        public Button button;
+        public Barrel barrel;
+        public DonkeyK donkeyKong;
+        public Lover lover;
 
         private Texture2D bg;
 
@@ -44,6 +52,7 @@ namespace DonkeyKong.Source.Scenes.GameScene
             enemyList = new List<Enemy>();
             pointlist = new List<Umbrella>(); // List that includes all the umberllas that mario can take to gain extra score
             hammerList = new List<Hammer>();
+            cementList = new List<Cement>();
 
             CreateLevel("level0.txt", content);
         }
@@ -65,6 +74,16 @@ namespace DonkeyKong.Source.Scenes.GameScene
             {
                 um.Update(gameTime, player, scoreManager);
             }
+            foreach (Cement cem in cementList)
+            {
+                cem.Update(player);
+            }
+            button.Update(gameTime, player);
+            barrel.Update(gameTime, button);
+            donkeyKong.Update(gameTime);
+
+            if (totalCements <= 0)
+                WinGame();
         }
         internal override void Draw(SpriteBatch spriteBatch)
         {
@@ -72,10 +91,6 @@ namespace DonkeyKong.Source.Scenes.GameScene
             foreach (Tile t in tileArray)
             {
                 t.Draw(spriteBatch);
-            }
-            foreach (Enemy en in enemyList)
-            {
-                en.Draw(spriteBatch);
             }
             foreach (Umbrella point in pointlist)
             {
@@ -85,7 +100,21 @@ namespace DonkeyKong.Source.Scenes.GameScene
             {
                 hammer.Draw(spriteBatch);
             }
+            foreach (Cement cem in cementList)
+            {
+                cem.Draw(spriteBatch);
+            }
+            foreach (Enemy en in enemyList)
+            {
+                en.Draw(spriteBatch);
+            }
+            button.Draw(spriteBatch);
+            barrel.Draw(spriteBatch);
+
+            donkeyKong.Draw(spriteBatch);
             player.Draw(spriteBatch);
+            lover.Draw(spriteBatch);
+
             hud.Draw(spriteBatch);
             scoreManager.Draw(spriteBatch);
         }
@@ -113,50 +142,79 @@ namespace DonkeyKong.Source.Scenes.GameScene
             {
                 for (int j = 0; j < list[0].Length; j++)
                 {
-                    if (list[i][j] == 'H')
+                    if (list[i][j] == 'H') // Ladder tile
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texLadder, true, true);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texLadder, true, true);
                     }
-                    else if (list[i][j] == '+')
+                    else if (list[i][j] == '+') // Nothing tile
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, false, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, false, false);
                     }
-                    else if (list[i][j] == '#')
+                    else if (list[i][j] == '#') // Platform + ladder tile
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texCombined, true, true);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texCombined, true, true);
                     }
-                    else if (list[i][j] == '=')
+                    else if (list[i][j] == '=') // Platform tile
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texBridge, false, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texBridge, false, false);
                     }
-                    else if (list[i][j] == 'J')
+                    else if (list[i][j] == 'J') // Umbrella item
                     {
                         Umbrella point = new Umbrella(new Vector2(j * tileSize, i * tileSize));
                         pointlist.Add(point);
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, true, false);
                     }
-                    else if (list[i][j] == 'T')
+                    else if (list[i][j] == 'T') // Hammer item
                     {
                         Hammer hammer = new Hammer(new Vector2(j * tileSize, i * tileSize));
                         hammerList.Add(hammer);
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, true, false);
                     }
-                    else if (list[i][j] == '0')
+                    else if (list[i][j] == '0') // Enemy fire
                     {
-                        Enemy enemy = new Enemy(new Vector2(j * tileSize, i * tileSize));
+                        Enemy enemy = new Enemy(new Vector2(j * tileSize, i * tileSize), i);
                         enemy.LoadContent(content);
                         enemyList.Add(enemy);
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, true, false);
                     }
-                    else if (list[i][j] == 'M')
+                    else if (list[i][j] == 'z') // Cement / pie item
+                    {
+                        Cement cement = new Cement(new Vector2(j * tileSize, i * tileSize));
+                        cementList.Add(cement);
+                        totalCements++;
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, true, false);
+                    }
+                    else if (list[i][j] == '5') // Button object
+                    {
+                        button = new Button(new Vector2(j * tileSize, i * tileSize));
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, true, false);
+                    }
+                    else if (list[i][j] == 'G') // Barrel object
+                    {
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, false, false);
+                        barrel = new Barrel(new Vector2(j * tileSize, i * tileSize), tileArray[j,i]);
+                    }
+                    else if (list[i][j] == 'D') // Donkey Kong
+                    {
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, false, false);
+                        donkeyKong = new DonkeyK(new Vector2(j * tileSize, i * tileSize));
+
+                    }
+                    else if (list[i][j] == 'p') // Lover
+                    {
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, false, false);
+                        lover = new Lover(new Vector2(j * tileSize, i * tileSize));
+
+                    }
+                    else if (list[i][j] == 'M') // Mario's location
                     {
                         player = new Player(new Vector2(j * tileSize, i * tileSize), 150);
                         player.LoadContent(content);
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, true, false);
                     }
-                    else
+                    else // Air / nothing
                     {
-                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), TextureHandler.texAir, true, false);
+                        tileArray[j, i] = new Tile(new Vector2(j * tileSize, i * tileSize), ContentLoader.texAir, true, false);
                     }
                 }
 
@@ -169,6 +227,11 @@ namespace DonkeyKong.Source.Scenes.GameScene
         public static bool GetLadderAtPosition(Vector2 pos) // Returns true or false if the tile at specified position is climbable or not
         {
             return tileArray[(int)pos.X / tileSize, (int)pos.Y / tileSize].isClimbable;
+        }
+        void WinGame()
+        {
+            scoreManager.UpdateHighScores();
+            GameStateManager.State = GameStateManager.GameState.Won;
         }
     }
 }

@@ -23,10 +23,12 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         Random random = new Random();
         GameTime gameTime;
         Managers.Timer speedTimer;
+        Managers.Timer AppearTimer;
 
-        bool isMoving;
+        bool hasAppeared;
         bool defeated;
         int speedChangeInterval = 3;
+        float appearTime;
 
         int frameWidth = 32;
         int frameHeight = 32;
@@ -34,24 +36,28 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         float frameInterval = 0.1f;  // Animation speed
         double frameTimer = 0;
 
-        Player player;
-
-        public Enemy(Vector2 pos)
+        public Enemy(Vector2 pos, int time)
         {
             position = pos;
-            texture = TextureHandler.texFire;
+            texture = ContentLoader.texFire;
+            appearTime = time;
+            hasAppeared = false;
         }
         internal void LoadContent(ContentManager content)
         {
             speedTimer = new Managers.Timer();
             speedTimer.ResetAndStart(speedChangeInterval);
+
+            AppearTimer = new Managers.Timer();
+            AppearTimer.ResetAndStart(appearTime / 3);
+
             defeated = false;
 
         }
 
         internal void Update(GameTime gameTime, Player player)
         {
-            if (!defeated)
+            if (!defeated && hasAppeared)
             {
                 this.gameTime = gameTime;
                 MoveToTarget(gameTime);
@@ -63,11 +69,19 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 }
                 CheckHammerCollision(player);
             }
+            if (AppearTimer.IsDone())
+            {
+                hasAppeared = true;
+            }
+            else
+            {
+                AppearTimer.Update(gameTime);
+            }
         }
         internal void Draw(SpriteBatch spriteBatch)
         {
             Rectangle srcRect = new Rectangle(frame * frameWidth, 0, frameWidth, frameHeight);
-            if (!defeated)
+            if (!defeated && hasAppeared)
                 spriteBatch.Draw(texture, position, srcRect, Color.White);
         }
         private void ChangeDirection()
@@ -126,6 +140,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             else if (player.GetRect().Intersects(GetBounds()) && !player.isHit)
             {
                 player.GetHit();
+                ScoreManager.currentScore -= 150;
             }
         }
         private void Defeat()

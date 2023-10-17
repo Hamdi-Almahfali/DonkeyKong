@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DonkeyKong.Source.Engine;
 using DonkeyKong.Source.Managers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,6 +16,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
     {
         Texture2D texture;
         Vector2 position;
+        Vector2 initialPosition;
 
         private int score;
         private float displayTimer; 
@@ -23,14 +25,18 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         public bool collected { get; private set; }
         public Rectangle rect { get; private set; }
 
+        SoundEffectInstance sndInstance;
+
         public Umbrella(Vector2 position)
         {
-            texture = TextureHandler.texUmbrella;
+            texture = ContentLoader.texUmbrella;
             this.position = position;
+            initialPosition = position;
             score = 500;
             displayTimer = 0f;
             displayScore = false;
             rect = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+            sndInstance = ContentLoader.sndPling.CreateInstance();
         }
 
         internal void LoadContent(ContentManager content)
@@ -44,7 +50,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 displayTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 // Hide the score after 2 seconds
-                if (displayTimer >= 2f)
+                if (displayTimer >= 0.8f)
                     displayScore = false;
             }
             // Collect item if player collides with it
@@ -61,7 +67,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             {
                 Vector2 textSize = ScoreManager.font.MeasureString(score.ToString());
                 Vector2 textPosition = position + new Vector2((texture.Width - textSize.X) / 2, (texture.Height - textSize.Y) / 2);
-
+                position.Y = MathHelper.Lerp(position.Y, initialPosition.Y - 30, 0.05f);
                 // Drawing the score centered on the item
                 spriteBatch.DrawString(ScoreManager.font, score.ToString(), textPosition, Color.White);
             }
@@ -71,6 +77,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             collected = true;
             displayScore = true;
             scoreManager.UpdateCurrentScore(score);
+            sndInstance.Play();
             
         }
     }

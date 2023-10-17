@@ -18,6 +18,7 @@ namespace DonkeyKong.Source
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
         }
 
         protected override void Initialize()
@@ -28,13 +29,15 @@ namespace DonkeyKong.Source
             // INITIALIZE GAME STATE
             gameStateManager = new();
 
+            Window.Title = "Donkey Kong classic";
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            TextureHandler.LoadTextures(Content);
+            ContentLoader.LoadTextures(Content);
             gameStateManager.LoadContent(Content);
         }
 
@@ -47,7 +50,7 @@ namespace DonkeyKong.Source
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
             gameStateManager.Draw(spriteBatch);

@@ -15,7 +15,6 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         const int TileSize = 32;
         int maxHearts = GameScene.maxHearts;
         const int size = TileSize + 38; // Gap between the hearts 
-        Texture2D texture;
 
         float heartsRatio;
         int heartsToDisplay;
@@ -29,7 +28,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         {
             for (int i = 0; i < heartsToDisplay; i++)
             {
-                spriteBatch.Draw(TextureHandler.texHeart, new Vector2(i * size + 32, 32), Color.White);
+                spriteBatch.Draw(ContentLoader.texHeart, new Vector2(i * size + 32, 32), Color.White);
             }
         }
     }

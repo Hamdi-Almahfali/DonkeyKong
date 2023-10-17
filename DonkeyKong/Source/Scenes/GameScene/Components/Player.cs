@@ -25,12 +25,14 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         public Rectangle attackRect { get; private set; }
         private Timer superPowerTimer;
         public Timer hitTimer;
+        public Timer deathTimer;
         SpriteEffects spriteEffect = SpriteEffects.None; // To mirror mario
 
         public bool isAttacking;
         bool isMoving;
         bool isClimbing;
         public bool isHit;
+        bool isDead;
 
         int frameWidth = 32;
         int frameHeight = 32;
@@ -45,6 +47,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             direction = new Vector2(0, 0);
             this.speed = speed;
             isMoving = false;
+            isDead = false;
             destination = Vector2.Zero;
         }
 
@@ -55,6 +58,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             attackRect = new Rectangle((int)position.X - texture.Width, (int)position.Y - texture.Height, texture.Width + texture.Width, texture.Height + texture.Height);
             superPowerTimer = new Timer();
             hitTimer = new Timer();
+            deathTimer = new Timer();
             isAttacking = false;
             isHit = false;
         }
@@ -64,48 +68,60 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             // Update attack rectangle
             attackRect = new Rectangle((int)position.X - frameWidth, (int)position.Y - frameHeight, texture.Width, texture.Height - frameHeight);
             this.gameTime = gameTime;
-            KeyMouseReader.Update();
             SuperPowerBehavior(gameTime);
             HitBehavior(gameTime);
-            if (!isMoving)
+            if (GameScene.currentHearts <= 0) // Kill the player if health is below 0
             {
-                if (KeyMouseReader.KeyPressed(Keys.W))
+                if (!isDead)
                 {
-                    ChangeClimbing(new Vector2(0, -1));
+                    isDead = true;
+                    deathTimer.ResetAndStart(3.0f);
                 }
-                else if (KeyMouseReader.KeyPressed(Keys.A))
-                {
-                    ChangeDirection(new Vector2(-1, 0));
-                    spriteEffect = SpriteEffects.None;
-                }
-                else if (KeyMouseReader.KeyPressed(Keys.S))
-                {
-                    ChangeClimbing(new Vector2(0, 1));
-                }
-                else if (KeyMouseReader.KeyPressed(Keys.D))
-                {
-                    ChangeDirection(new Vector2(1, 0));
-                    spriteEffect = SpriteEffects.FlipHorizontally;
-                }
+                DeathBehavior(gameTime);
             }
-            else
+            if (!isDead)
             {
-                position += direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-                if (Vector2.Distance(position, destination) < 1)
+                if (!isMoving)
                 {
-                    position = destination;
-                    isMoving = false;
-                    if (!GameScene.GetLadderAtPosition(position))
+                    if (KeyMouseReader.KeyPressed(Keys.W))
                     {
-                        state = State.Moving;
-                        isClimbing = false;
-                        frame = 0;
+                        ChangeClimbing(new Vector2(0, -1));
                     }
-                    else
+                    else if (KeyMouseReader.KeyPressed(Keys.A))
                     {
-                        isClimbing = false;
-                        frame = 0;
+                        ChangeDirection(new Vector2(-1, 0));
+                        spriteEffect = SpriteEffects.None;
+                    }
+                    else if (KeyMouseReader.KeyPressed(Keys.S))
+                    {
+                        ChangeClimbing(new Vector2(0, 1));
+                    }
+                    else if (KeyMouseReader.KeyPressed(Keys.D))
+                    {
+                        ChangeDirection(new Vector2(1, 0));
+                        spriteEffect = SpriteEffects.FlipHorizontally;
+                    }
+                }
+                else
+                {
+                    position += direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                    if (Vector2.Distance(position, destination) < 1)
+                    {
+                        position = destination;
+                        isMoving = false;
+                        if (!GameScene.GetLadderAtPosition(position))
+                        {
+                            state = State.Moving;
+                            isClimbing = false;
+                            frame = 0;
+                        }
+                        else
+                        {
+                            isClimbing = false;
+                            frame = 0;
+                        }
                     }
                 }
             }
@@ -113,10 +129,18 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
         internal override void Draw(SpriteBatch spriteBatch)
         {
             Rectangle srcRect = ApplyTexture();
-            if (!isHit)
-                spriteBatch.Draw(texture, position, srcRect, Color.White, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+            if (!isDead) // if mario is still alive
+            {
+                if (!isHit)
+                    spriteBatch.Draw(texture, position, srcRect, Color.White, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+                else
+                    spriteBatch.Draw(texture, position, new Rectangle(0, 96, frameWidth, frameHeight), Color.White, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+            }
             else
-                spriteBatch.Draw(texture, position, srcRect, Color.Red, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+            {
+                position.Y += 0.5f;
+                spriteBatch.Draw(texture, position, new Rectangle(0, 128, frameWidth, frameHeight), Color.White);
+            }
 
             // Play animation of player attacking or stop
             if (isAttacking)
@@ -134,7 +158,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 {
                     hammerRect = new Rectangle(0, 0, frameWidth * 3, frameHeight * 3);
                 }
-                spriteBatch.Draw(TextureHandler.texHammerAttack, position - new Vector2(frameWidth, frameHeight), hammerRect, Color.White, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
+                spriteBatch.Draw(ContentLoader.texHammerAttack, position - new Vector2(frameWidth, frameHeight), hammerRect, Color.White, 0f, Vector2.Zero, 1f, spriteEffect, 0f);
             }
         }
         private void ChangeDirection(Vector2 dir)
@@ -210,7 +234,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 }
             }
         }
-        private Rectangle ApplyTexture()
+        private Rectangle ApplyTexture() // This function manages the sprite animation and sprite change of mario depending on the different actions and states
         {
             Rectangle srcRect;
 
@@ -282,7 +306,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
             hitTimer.ResetAndStart(2.0f);
             GameScene.currentHearts--;
         }
-        private void HitBehavior(GameTime gameTime)
+        private void HitBehavior(GameTime gameTime) // Controls the bahavior of when mario loses a life
         {
             hitTimer.Update(gameTime);
             if (hitTimer.IsDone())
@@ -290,6 +314,18 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
                 isHit = false;
                 return;
             }
+        }
+        private void DeathBehavior(GameTime gameTime) // Controls the bahavior of when mario loses a life
+        {
+            if (isDead)
+            {
+                deathTimer.Update(gameTime);
+                if (deathTimer.IsDone())
+                {
+                    GameStateManager.State = GameStateManager.GameState.Lost;
+                }
+            }
+            
         }
     }
 }

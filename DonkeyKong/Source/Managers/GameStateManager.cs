@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using DonkeyKong.Source.Scenes.GameScene;
 using DonkeyKong.Source.Scenes.MenuScene;
+using DonkeyKong.Source.Scenes.LostScene;
+using DonkeyKong.Source.Scenes.WinScene;
 
 namespace DonkeyKong.Source.Managers
 {
@@ -22,24 +24,30 @@ namespace DonkeyKong.Source.Managers
             Lost,
             Won
         }
-        public static GameState State { get; set; } = GameState.Game;
+        public static GameState State { get; set; } = GameState.Menu;
 
         private MenuScene menuScene = new MenuScene();
         private GameScene gameScene = new GameScene();
+        private LostScene lostScene = new LostScene();
+        private WinScene winScene = new WinScene();
 
 
         internal override void LoadContent(ContentManager content)
         {
             menuScene.LoadContent(content);
             gameScene.LoadContent(content);
+            lostScene.LoadContent(content);
+            winScene.LoadContent(content);
         }
 
         internal override void Update(GameTime gameTime)
         {
+            KeyMouseReader.Update();
             switch (State)
             {
                 case GameState.Menu:
                     menuScene.Update(gameTime);
+                    KeyMouseReader.Update();
                     break;
                 case GameState.Game:
                     gameScene.Update(gameTime);
@@ -47,8 +55,10 @@ namespace DonkeyKong.Source.Managers
                 case GameState.Settings:
                     break;
                 case GameState.Lost:
+                    lostScene.Update(gameTime);
                     break;
                 case GameState.Won:
+                    winScene.Update(gameTime);
                     break;
             }
         }
@@ -66,8 +76,10 @@ namespace DonkeyKong.Source.Managers
                 case GameState.Settings:
                     break;
                 case GameState.Lost:
+                    lostScene.Draw(spriteBatch);
                     break;
                 case GameState.Won:
+                    winScene.Draw(spriteBatch);
                     break;
             }
         }

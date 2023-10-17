@@ -21,7 +21,7 @@ namespace DonkeyKong.Source.Scenes.GameScene.Components
 
         public Hammer(Vector2 position)
         {
-            texture = TextureHandler.texHammer;
+            texture = ContentLoader.texHammer;
             this.position = position;
             rect = new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
         }
